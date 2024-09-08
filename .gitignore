@@ -34,3 +34,25 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Node modules
+node_modules/
+
+# Build output
+build/
+dist/
+.next/
+
+# Environment files
+.env
+
+# Logs
+*.log
+
+# Coverage reports
+coverage/
+
+# Optional: Docker configuration
+Dockerfile
+docker-compose.yml
+
