@@ -19,6 +19,7 @@ body {
 h1 {
   font-size: 5rem;
   margin: 1rem;
+  text-align: center;
 }
 
 form {

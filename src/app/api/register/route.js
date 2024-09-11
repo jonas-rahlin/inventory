@@ -1,14 +1,26 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
+// Initiate Prisma Client
 const prisma = new PrismaClient();
 
+// Register User function
 export async function POST(req) {
-  const { name, email, password } = await req.json();
-
   try {
+    // Retrieve Registration info
+    const { name, email, password } = await req.json();
+
+    //If all fields are not correctly filled, then report Error
+    if (!name || !email || !password) {
+      return new Response(JSON.stringify({
+        error: 'Missing required fields'
+      }), { status: 400 });
+    }
+
+    //Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    //Creat the new User
     const newUser = await prisma.user.create({
       data: {
         name,
@@ -18,13 +30,14 @@ export async function POST(req) {
     });
 
     return new Response(JSON.stringify({
-      message: 'User registered successfully',
+      message: 'Registration success',
       user: newUser
     }), { status: 201 });
+
   } catch (error) {
     if (error.code === 'P2002') {
       return new Response(JSON.stringify({
-        error: 'User with this email already exists'
+        error: 'Email already exists'
       }), { status: 400 });
     } else {
       return new Response(JSON.stringify({
@@ -33,3 +46,4 @@ export async function POST(req) {
     }
   }
 }
+

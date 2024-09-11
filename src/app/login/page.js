@@ -4,15 +4,19 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import '../../../styles/login.css';
 
+//Generate Login Page
 function LoginPage() {
+  //Form fields
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: ''
   });
 
+  //Set routing function
   const router = useRouter();
 
+  //
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -21,24 +25,27 @@ function LoginPage() {
     }));
   };
 
+  //
   const handleSubmit = async (e, action) => {
+    //Prevent reload
     e.preventDefault();
   
-    // Common validation: Ensure email and password are filled for both login and registration
+    //Alert user if form isnt correctly filled out
     if (!formData.email || !formData.password) {
       alert('Email and password are required');
       return;
     }
   
-    // Additional validation for registration: Ensure name is filled
     if (action === 'register' && !formData.name) {
-      alert('Name is required for registration');
+      alert('Name is required');
       return;
     }
   
+    //Handle proceeding with Login vs Register
     const endpoint = action === 'login' ? '/api/login' : '/api/register';
   
     try {
+      //Send Formdata to Backend
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -47,15 +54,17 @@ function LoginPage() {
         body: JSON.stringify(formData)
       });
   
+      //Error handling
       if (!response.ok) {
         const error = await response.json();
-        alert(`Error: ${error.error}`);
+        console.error(`Error: ${error.error}`);
         return;
       }
   
+      //Login User and set JWT or Register User based on User Action
       const data = await response.json();
       if (action === 'login') {
-        localStorage.setItem('token', data.token); // Store JWT token in local storage
+        localStorage.setItem('token', data.token);
         router.push('/inventory');
         alert('Login successful');
       } else {
@@ -63,13 +72,14 @@ function LoginPage() {
       }
   
     } catch (error) {
+      //Error Handling
       console.error('Error:', error);
-      alert('An error occurred');
     }
   };
   
 
   return (
+    //Generate Html Elements
     <div>
       <h1>Inventory</h1>
       <form>

@@ -1,41 +1,47 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Adjust if necessary
+import { useRouter } from 'next/navigation';
 import InventoryItem from '../../components/InventoryItem';
 import InventoryForm from '../../components/InventoryForm'; 
 import '../../../styles/inventory.css';
 
+//Generate Inventory Page
 function InventoryPage() {
-  const [items, setItems] = useState([]);
-  const [editingItem, setEditingItem] = useState(null); // State for editing item
-  const router = useRouter(); // For redirection
 
+  //
+  const [items, setItems] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
+
+  //Set Routing function
+  const router = useRouter();
+
+  
   useEffect(() => {
+    //Check for JWT
     const checkAuth = async () => {
       const token = localStorage.getItem('token');
 
+      //If no token exists, send user back to Login page
       if (!token) {
-        // No token found, redirect to login
         router.push('/login');
         return;
       }
 
+      //Check JWT Authentication
       try {
         const response = await fetch('/api/verify-token', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}` },
         });
-        console.log(token);
 
+        //If authentication is okay, show item. Else send User back to Login Page.
         if (!response.ok) {
-          // Token is invalid or expired, redirect to login
           router.push('/login');
         } else {
-          fetchItems(); // Fetch items only if token is valid
+          fetchItems();
         }
       } catch (error) {
-        // Error occurred, redirect to login
         router.push('/login');
       }
     };
@@ -43,6 +49,7 @@ function InventoryPage() {
     checkAuth();
   }, [router]);
 
+  // Fetch inventory items function
   const fetchItems = async () => {
     try {
       const response = await fetch('/api/inventory');
@@ -56,17 +63,22 @@ function InventoryPage() {
     }
   };
 
+  //Update Items after new Item creation
   const handleSave = () => {
-    fetchItems(); // Refresh items after save
-    setEditingItem(null); // Clear editing item after save
+    //Update Inventory
+    fetchItems();
+    setEditingItem(null);
   };
 
+  //Set Selected Item to Edit
   const handleEdit = (item) => {
-    setEditingItem(item); // Set the item to be edited
+    setEditingItem(item);
   };
 
+  //Delete Item
   const handleDelete = async (id) => {
     try {
+      //Find selected Item then Delete
       const response = await fetch(`/api/inventory?id=${id}`, {
         method: 'DELETE',
       });
@@ -75,14 +87,27 @@ function InventoryPage() {
         throw new Error('Network response was not ok');
       }
 
-      fetchItems(); // Refresh items after deletion
+      //Update Inventory
+      fetchItems();
     } catch (error) {
       console.error('Error deleting inventory item:', error);
     }
   };
 
+  //Logout User Function
+  const handleLogout = () => {
+    //Clear Local Storage and send User to Login Page
+    localStorage.clear();
+    router.push('/login');
+  };
+
   return (
+    //Generate Html
     <div>
+      <nav>
+            <button onClick={handleLogout}>Logout</button> {/* Logout button */}
+      </nav>
+
       <h1>Inventory</h1>
       <InventoryForm item={editingItem} onSave={handleSave} />
       <ul id="inventory-display">

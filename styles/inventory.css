@@ -10,9 +10,17 @@
   border-radius: 0.3rem;
 }
 
+nav button {
+  position: absolute;
+  top: 0rem;
+  right: 1rem;
+  width: 5rem;
+}
+
 h1 {
   font-size: 5rem;
   margin: 1rem;
+  text-align: center;
 }
 
 form {

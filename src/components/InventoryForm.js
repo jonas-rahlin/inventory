@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+//Function for generating Form 
 function InventoryForm({ item, onSave }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
